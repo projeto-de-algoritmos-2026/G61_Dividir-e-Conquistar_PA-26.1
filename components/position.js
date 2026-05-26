@@ -6,3 +6,5 @@ export function createPosition(x = 0, y = 0) {
 }
 
 world.registerComponent("position")
+
+console.log("Position foi carregado")
