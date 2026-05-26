@@ -1,0 +1,49 @@
+## Entidades
+player
+inimigos (meteoro)
+itens (armas, poção, arco-flecha, bingo, tele-sena, dados, medidor de sorte)
+parede, piso, porta
+npc (opcional)
+
+## Componentes
+hitbox
+Position
+Vida
+Inventário
+Colisão
+Equipáveis
+Consumíveis (yes/no)
+Dano
+Velocidade
+
+## Sistema
+Sistema de movimento
+Sistema de Colisão
+Sistema de Combate
+Sistema de itens
+Sistema de monstros
+
+## Inspirações
+Trevo de quatro folhas
+Ferradura de cavalo
+Bambu da sorte
+Espada de são jorge
+Meia da sorte
+Pé de coelho
+Apanhador de sonho
+
+## Gênero
+Dungeon Crawler
+Fantasia
+Explorar, Lutar, Lootear, Melhorar, Morrer, Recomeçar
+Boss
+
+## Jogos
+The Binding of Isaac
+Hades
+Dead Cells
+Risk of Rain 2
+Slay the Spire
+Enter the Gungeon
+Noita
+Spelunky
