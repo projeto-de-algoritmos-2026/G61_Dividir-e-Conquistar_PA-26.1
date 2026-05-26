@@ -1,9 +1,13 @@
 console.log("Jogo iniciou!")
+import './components/index.js';
 import { world } from "./game.js"
 
 // === canvas ===
 const canvas = document.getElementById("canva")
 const ctx = canvas.getContext("2d")
+
+world.setResource('ctx', ctx);
+world.setResource('canvas', canvas);
 
 canvas.width = 800
 canvas.height = 600
