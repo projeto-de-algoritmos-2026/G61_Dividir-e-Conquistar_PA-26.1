@@ -4,6 +4,15 @@ class ECSWorld {
         this.nextEntityId = 0;
         this.components = new Map(); // Guarda: 'nome_componente' -> Map(entityId -> dados)
         this.systems = [];
+        this.resources = new Map();
+    }
+
+    setResource(name, value) {
+        this.resources.set(name, value);
+    }
+
+    getResource(name) {
+        return this.resources.get(name);
     }
 
     // Registra dinamicamente um novo tipo de componente quando o arquivo é carregado
