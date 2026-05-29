@@ -1,6 +1,6 @@
 // renderSystem.js
 
-import { world } from "./game.js"
+import { world } from "../game.js"
 
 world.registerSystem("renderSystem", (deltaTime) => {
     const ctx = world.getResource("ctx")

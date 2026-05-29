@@ -1,6 +1,7 @@
 console.log("Jogo iniciou!")
 import './components/index.js';
-import { world } from "./game.js"
+import './systems/index.js';
+import { world } from "./game.js";
 
 // === canvas ===
 const canvas = document.getElementById("canva")
@@ -22,6 +23,8 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
     keys[e.key.toLowerCase()] = false
 })
+
+world.setResource('keys', keys) 
 
 // === gameloop ===
 let lastTime = performance.now()
