@@ -74,13 +74,13 @@ class ECSWorld {
         }
     }
 
-    registerSystem(systemFunction) {
-        this.systems.push(systemFunction);
+    registerSystem(name, systemFunction) {
+        this.systems.push({ name, fn: systemFunction });
     }
 
-    update() {
+    update(deltaTime) {
         for (const system of this.systems) {
-            system(this); // Executa cada sistema passando o mundo como contexto
+            system.fn(deltaTime);
         }
     }
 }
