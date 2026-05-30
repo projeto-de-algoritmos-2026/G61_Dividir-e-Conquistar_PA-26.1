@@ -7,7 +7,14 @@ import { world } from "./game.js";
 const tilesetImg = new Image();
 tilesetImg.src = 'resources\\ForestAventure.png';
 tilesetImg.onload = () => {
-    world.setResource('tileset', tilesetImg);
+    world.setResource('ForestAdventure', tilesetImg);
+    requestAnimationFrame(gameLoop); // só inicia depois de carregar
+};
+
+const tilesetImg2 = new Image();
+tilesetImg2.src = 'resources\\DarkDungeon.png';
+tilesetImg2.onload = () => {
+    world.setResource('DarkDungeon', tilesetImg2);
     requestAnimationFrame(gameLoop); // só inicia depois de carregar
 };
 

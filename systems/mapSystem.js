@@ -71,8 +71,6 @@ world.registerSystem("mapSystem", (deltaTime) => {
     const TILE_SIZE = 32;
     const ROOM_COLS = 600;
     const ROOM_ROWS = 800;
-
-    const tilesetImage = world.getResource("tileset")
     
     // configuração de parede superior
     // let srcX = 16 * 3
@@ -88,9 +86,11 @@ world.registerSystem("mapSystem", (deltaTime) => {
     
     ctx.imageSmoothingEnabled = false;
 
-    let grama = 1
+    let grama = 0
 
     if(grama){
+        const tilesetImage = world.getResource("ForestAdventure")
+
         // configuração de grama
         let srcX = 16 * 3
         let srcY = 0
@@ -110,17 +110,63 @@ world.registerSystem("mapSystem", (deltaTime) => {
                 tileW, tileH, // tamanho do tile no tileset
                 destX, destY, // onde desenhar no canvas
                 64, 64  // tamanho final na tela
-            )
+                )
+            }
         }
-    }
     
-    // configuração de flor
-    srcX = 16 *6
-    srcY = 16 * 12
-    
-    // desenha flores
+        // configuração de flor
+        srcX = 16 *6
+        srcY = 16 * 12
+        
+        // desenha flores
         for (let row = 0; row < ROOM_ROWS; row = row + 128) {
             for (let col = 0; col < ROOM_COLS; col = col + 128) {
+
+                let destX = row
+                let destY = col
+
+                ctx.drawImage(
+                tilesetImage, // a imagem fonte
+                srcX, srcY,   // posição do tile no tileset (em pixels)
+                tileW, tileH, // tamanho do tile no tileset
+                destX, destY, // onde desenhar no canvas
+                64, 64  // tamanho final na tela
+                )
+            }
+        }
+    } else {
+        const tilesetImage = world.getResource("DarkDungeon")
+
+        // // configuração de dungeon
+        let srcX = 16 * 3
+        let srcY = 16 * 8
+        let tileW = 16
+        let tileH = 16
+        
+        // desenha chão
+        for (let row = 0; row < ROOM_ROWS; row = row + 64) {
+            for (let col = 0; col < ROOM_COLS; col = col + 64) {
+
+                let destX = row
+                let destY = col
+
+                ctx.drawImage(
+                tilesetImage, // a imagem fonte
+                srcX, srcY,   // posição do tile no tileset (em pixels)
+                tileW, tileH, // tamanho do tile no tileset
+                destX, destY, // onde desenhar no canvas
+                64, 64  // tamanho final na tela
+                )
+            }
+        }
+
+        // configuração de rachadura
+        srcX = 16 * 1
+        srcY = 16 * 8
+        
+        // desenha rachadura
+        for (let row = 0; row < ROOM_ROWS; row = row + 256) {
+            for (let col = 0; col < ROOM_COLS; col = col + 256) {
 
                 let destX = row
                 let destY = col
