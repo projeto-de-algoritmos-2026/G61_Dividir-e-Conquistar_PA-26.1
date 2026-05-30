@@ -1,5 +1,6 @@
 // index.js
 // adiciona sistemas por aqui
 import "./initSystem.js"
-import "./renderSystem.js"
 import "./mapSystem.js"
+import "./monsterSystem.js"
+import "./renderSystem.js"
