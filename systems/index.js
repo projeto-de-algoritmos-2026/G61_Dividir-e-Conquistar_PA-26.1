@@ -2,3 +2,4 @@
 // adiciona sistemas por aqui
 import "./initSystem.js"
 import "./renderSystem.js"
+import "./mapSystem.js"
