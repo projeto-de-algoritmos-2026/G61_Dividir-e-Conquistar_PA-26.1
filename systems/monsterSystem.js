@@ -52,9 +52,6 @@ world.registerSystem("monsterSystem", (deltaTime) => {
                 monsterVelocity.x += monsterType.dirX * acceleration;
                 monsterVelocity.y += monsterType.dirY * acceleration;
 
-                monsterPosition.x += monsterVelocity.x;
-                monsterPosition.y += monsterVelocity.y;
-
                 monsterType.traveled += Math.hypot(
                     monsterVelocity.x,
                     monsterVelocity.y
@@ -69,9 +66,6 @@ world.registerSystem("monsterSystem", (deltaTime) => {
 
                 monsterVelocity.x *= friction;
                 monsterVelocity.y *= friction;
-
-                monsterPosition.x += monsterVelocity.x;
-                monsterPosition.y += monsterVelocity.y;
 
                 const speed = Math.hypot(
                     monsterVelocity.x,
@@ -121,9 +115,6 @@ world.registerSystem("monsterSystem", (deltaTime) => {
             monsterVelocity.x *= 0.95;
             monsterVelocity.y *= 0.95;
 
-            // aplica movimento
-            monsterPosition.x += monsterVelocity.x;
-            monsterPosition.y += monsterVelocity.y;
         }
     }
 

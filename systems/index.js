@@ -3,4 +3,5 @@
 import "./initSystem.js"
 import "./mapSystem.js"
 import "./monsterSystem.js"
+import "./movimentSystem.js"
 import "./renderSystem.js"
