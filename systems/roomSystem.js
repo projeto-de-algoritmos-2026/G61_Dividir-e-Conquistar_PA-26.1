@@ -221,6 +221,7 @@ for (const direction of directions) {
 
         // Reposiciona o jogador no lado oposto da porta nova
         mapData.currentRoom = roomComponent[direction];
+        playerLocation.roomId = mapData.currentRoom;
         
 
         const arrivedFrom = opposite[direction];

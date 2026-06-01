@@ -13,9 +13,17 @@ world.registerSystem("itemSpawnSystem", (deltaTime) => {
     const locations = world.query("player", "location")
     if (locations.length === 0) return;
 
+    // precisa existir mapa
+    const maps = world.query("map");
+    if (maps.length === 0) return;
+
+    const mapEntity = maps[0];
+    const mapData = world.getComponent(mapEntity, "map");
+    if (!mapData) return;
+
     //decide se vai ter
     const items = world.query("item", "position")
-    if(items.length === 0 && contador < 1){
+    if(items.length === 0 && contador < 1 && mapData.currentRoom != -1){
         contador++
         const newItemId = world.createEntity()
         world.addComponent(newItemId, "item", {
@@ -30,15 +38,22 @@ world.registerSystem("itemSpawnSystem", (deltaTime) => {
             x: 400,
             y: 64
         })
+
+        world.addComponent(newItemId, "location", {
+            roomId: mapData.currentRoom
+        })
     }
 
     const ctx = world.getResource("ctx")
     let renderItems = world.query("item", "position")
+
     for(const itemId of renderItems){
         const item = world.getComponent(itemId, "item")
         const itemName = item.itemName
-
+        const itemLocation = world.getComponent(itemId, "location")
         const itemPosition = world.getComponent(itemId, "position")
+
+         if(itemLocation.roomId != mapData.currentRoom ) continue;
 
         if(RENDERABLE.includes(itemName)){
             const tilesetImage = world.getResource(itemName)

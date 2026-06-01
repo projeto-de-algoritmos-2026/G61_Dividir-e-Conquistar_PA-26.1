@@ -108,6 +108,8 @@ world.registerSystem("mapSystem", (deltaTime) => {
     if(roomLocation.type == "nullString") return
     if(roomLocation.type == "grass") grama = 1
 
+    // console.log("current room:", mapData.currentRoom)
+
     if(grama){
         const tilesetImage = world.getResource("ForestAdventure")
 
