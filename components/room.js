@@ -2,8 +2,8 @@
 
 import { world } from "../game.js";
 
-export function createRoom(id = null, north = null, south = null, east = null, west = null) {
-    return { id, north, south, east, west };
+export function createRoom(north = null, south = null, east = null, west = null) {
+    return { north, south, east, west };
 }
 
 world.registerComponent("room")

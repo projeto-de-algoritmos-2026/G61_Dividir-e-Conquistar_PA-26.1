@@ -47,7 +47,7 @@ world.registerSystem("mapSystem", (deltaTime) => {
     if (players.length === 0) return;
 
     const playerId  = players[0];
-    const playerData = world.getComponent(playerId, "Player");
+    const playerData = world.getComponent(playerId, "player");
     const luckLevel  = playerData?.luck ?? 0;
 
     const ctx = world.getResource("ctx")
@@ -86,7 +86,27 @@ world.registerSystem("mapSystem", (deltaTime) => {
     
     ctx.imageSmoothingEnabled = false;
 
+    // precisa existir mapa
+    const maps = world.query("map");
+    if (maps.length === 0) return;
+
+    const mapEntity = maps[0];
+
     let grama = 0
+
+    const mapData = world.getComponent(mapEntity, "map")
+
+    
+    if(mapData.currentRoom === -1)
+    return;
+
+    const roomLocation = world.getComponent(mapData.currentRoom, "location")
+
+    if(!roomLocation)
+    return;
+
+    if(roomLocation.type == "nullString") return
+    if(roomLocation.type == "grass") grama = 1
 
     if(grama){
         const tilesetImage = world.getResource("ForestAdventure")
