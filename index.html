@@ -8,6 +8,24 @@
         canvas {
             image-rendering: pixelated;
         }
+
+        #hud {
+        position: absolute;
+        top: 10px; left: 10px;
+        color: white;
+        font-family: monospace;
+        }
+
+        #luck-bar-bg {
+        width: 150px; height: 14px;
+        background: #333; border: 1px solid #888;
+        }
+        
+        #luck-bar-fill {
+        height: 100%;
+        background: #4caf50;
+        transition: width 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -15,6 +33,16 @@
 
     <div>
         <canvas id="canva"></canvas>
+    </div>
+
+    <div id="hud">
+        <div id="luck-bar-container">
+            <span>🍀 Sorte</span>
+            <div id="luck-bar-bg">
+                <div id="luck-bar-fill"></div>
+            </div>
+            <span id="luck-value">50/100</span>
+        </div>
     </div>
 
     <script type="module" src="main.js"></script>

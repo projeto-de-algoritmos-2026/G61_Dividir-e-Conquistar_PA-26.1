@@ -2,8 +2,8 @@
 
 import { world } from "../game.js";
 
-export function createMap(mapArray = []) {
-    return { mapArray };
+export function createMap(map = new Map(), currentRoom = -1) {
+    return { map, currentRoom };
 }
 
 world.registerComponent("map")

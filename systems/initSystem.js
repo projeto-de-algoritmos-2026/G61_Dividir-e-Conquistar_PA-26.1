@@ -91,8 +91,8 @@ world.registerSystem("initSystem", (deltaTime) => {
             const player = world.createEntity()
  
             world.addComponent(player, "player", { //TODO: componentes diferntes
-                speed: 150,
-                hp: 100,
+                name: "player 1",
+                luck: "50",
             })
  
             world.addComponent(player, "position", {
@@ -107,11 +107,20 @@ world.registerSystem("initSystem", (deltaTime) => {
             })
  
             world.addComponent(player, "location", {
-                type: "grass"
+                type: "nullString",
+                roomId: -1
             })
             
             console.log("Player criado, id:", player)
             ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            //cria a entidade mapa
+            const mapEntity = world.createEntity()
+
+            world.addComponent(mapEntity, "map", {
+                map: new Map(),
+                currentRoom: -1
+            })
         }
     }
 })

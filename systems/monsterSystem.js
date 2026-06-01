@@ -153,5 +153,10 @@ world.registerSystem("monsterSystem", (deltaTime) => {
         y: 0
     })
 
+    world.addComponent(monsterId, "location", {
+        type: "nullString",
+        roomId: -1
+    })
+
     console.log("Um monstro foi criado!")
 })
