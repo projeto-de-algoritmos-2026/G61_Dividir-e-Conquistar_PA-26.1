@@ -112,16 +112,22 @@ world.registerSystem("inventorySystem", (deltaTime) => {
 
     const playerEntity = players[0];
     const playerPos = world.getComponent(playerEntity, "position");
+    const playerLocation = world.getComponent(playerEntity, "location")
     const inv = world.getComponent(playerEntity, "inventory");
 
     // --- 1. Itens no chão = entidades com "item" E "position" ---
     const itemsOnGround = world.query("item", "position");
 
+    const itemsOnSameRoom = itemsOnGround.filter( itemID => {
+        const itemLocation = world.getComponent(itemID, "location")
+        return itemLocation && itemLocation.roomId === playerLocation.roomId;
+    })
+
     // --- 2. Acha o item mais próximo dentro do alcance ---
     let nearestItem = null;
     let nearestDist = Infinity;
 
-    for (const itemEntity of itemsOnGround) {
+    for (const itemEntity of itemsOnSameRoom) {
         const itemPos = world.getComponent(itemEntity, "position");
         const dx = playerPos.x - itemPos.x;
         const dy = playerPos.y - itemPos.y;
