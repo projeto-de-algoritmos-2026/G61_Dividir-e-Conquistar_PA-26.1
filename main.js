@@ -18,6 +18,13 @@ tilesetImg2.onload = () => {
     requestAnimationFrame(gameLoop); // só inicia depois de carregar
 };
 
+const tilesetImg3 = new Image();
+tilesetImg3.src = 'resources\\weapons\\weapon_rusty_sword.png';
+tilesetImg3.onload = () => {
+    world.setResource('rusty sword', tilesetImg3);
+    requestAnimationFrame(gameLoop); // só inicia depois de carregar
+};
+
 // === canvas ===
 const canvas = document.getElementById("canva")
 const ctx = canvas.getContext("2d")
