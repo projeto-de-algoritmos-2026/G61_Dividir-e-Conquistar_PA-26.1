@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Oracle's Curse</title>
     <style>
         * {
@@ -10,20 +10,22 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background: #1a1a2e;
             font-family: 'Courier New', monospace;
-            overflow: hidden; /* Remove scroll da página */
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: pan-x pan-y;
         }
 
-        /* Container principal - ocupa toda tela mas sem scroll */
+        /* Container principal */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -37,7 +39,7 @@
             overflow: hidden;
         }
 
-        /* Título responsivo */
+        /* Título */
         h1 {
             font-family: 'Cinzel', 'MedievalSharp', serif;
             background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
@@ -50,17 +52,17 @@
             letter-spacing: 2px;
             font-weight: 700;
             margin: 0;
-            flex-shrink: 0; /* Não encolhe */
+            flex-shrink: 0;
         }
 
-        /* Wrapper do canvas - flexível */
+        /* Wrapper do canvas */
         .canvas-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            flex: 1; /* Ocupa espaço disponível */
-            min-height: 0; /* Permite encolher */
+            flex: 1;
+            min-height: 0;
             padding: 0 10px;
         }
 
@@ -74,23 +76,15 @@
             max-height: 100%;
             width: auto;
             height: auto;
-            object-fit: contain; /* Mantém proporção */
+            object-fit: contain;
         }
 
-        /* Seção da barra de sorte - fixa embaixo */
+        /* Seção da barra de sorte */
         .luck-section {
             width: 100%;
             display: flex;
             justify-content: center;
-            flex-shrink: 0; /* Não encolhe */
-            margin-top: auto;
-        }
-
-        #hud {
-            position: static;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
+            flex-shrink: 0;
         }
 
         #luck-bar-container {
@@ -110,7 +104,6 @@
         #luck-bar-container span:first-child {
             font-size: clamp(11px, 2.5vh, 18px);
             color: #ffd700;
-            font-family: 'Courier New', monospace;
         }
 
         #luck-bar-bg {
@@ -136,13 +129,142 @@
             font-weight: bold;
             min-width: 50px;
             text-align: center;
-            font-family: 'Courier New', monospace;
         }
 
-        /* Import das fontes */
-        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&display=swap');
+        /* ========== CONTROLES PARA CELULAR ========== */
+        .mobile-controls {
+            display: none; /* Escondido por padrão */
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 10px;
+            flex-shrink: 0;
+        }
 
-        /* Media query para telas muito pequenas (até 240px) */
+        /* D-Pad */
+        .dpad {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dpad-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .dpad-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            touch-action: manipulation;
+            backdrop-filter: blur(5px);
+        }
+
+        .dpad-btn:active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(0.95);
+        }
+
+        /* Botões de ação */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 65px;
+            height: 65px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff4444;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            touch-action: manipulation;
+            backdrop-filter: blur(5px);
+            gap: 2px;
+        }
+
+        .action-btn span:first-child {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .action-btn span:last-child {
+            font-size: 10px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .action-btn:active {
+            background: rgba(255, 68, 68, 0.3);
+            transform: scale(0.95);
+        }
+
+        /* Estilos específicos para cada botão de ação */
+        .action-btn[data-action="E"] { border-color: #44ff44; }
+        .action-btn[data-action="E"] span:first-child { color: #44ff44; }
+        
+        .action-btn[data-action="C"] { border-color: #44aaff; }
+        .action-btn[data-action="C"] span:first-child { color: #44aaff; }
+        
+        .action-btn[data-action="X"] { border-color: #ffaa44; }
+        .action-btn[data-action="X"] span:first-child { color: #ffaa44; }
+        
+        .action-btn[data-action="Z"] { border-color: #ff44ff; }
+        .action-btn[data-action="Z"] span:first-child { color: #ff44ff; }
+
+        /* Responsividade - Mostra controles APARTIR DE 750px */
+        @media (max-width: 750px) {
+            .mobile-controls {
+                display: flex;
+            }
+        }
+
+        /* Ajuste para telas muito pequenas */
+        @media (max-width: 480px) {
+            .dpad-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .action-btn {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .action-btn span:first-child {
+                font-size: 18px;
+            }
+            
+            .mobile-controls {
+                gap: 10px;
+            }
+        }
+
+        /* Para telas muito pequenas (até 240px) */
         @media (max-width: 240px) {
             .game-container {
                 gap: 5px;
@@ -151,7 +273,6 @@
 
             h1 {
                 font-size: 0.7rem;
-                letter-spacing: 1px;
             }
 
             #luck-bar-container {
@@ -163,22 +284,28 @@
                 min-width: 70px;
                 height: 8px;
             }
-
-            #luck-bar-container span:first-child {
-                font-size: 8px;
-            }
-
-            #luck-value {
-                font-size: 8px;
-                min-width: 40px;
+            
+            .dpad-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
             
-            .canvas-wrapper {
-                padding: 0 5px;
+            .action-btn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .action-btn span:first-child {
+                font-size: 16px;
+            }
+            
+            .mobile-controls {
+                gap: 5px;
             }
         }
 
-        /* Para telas muito baixas (ex: 600px de altura) */
+        /* Para telas baixas */
         @media (max-height: 600px) {
             h1 {
                 font-size: 0.8rem;
@@ -188,27 +315,31 @@
                 padding: 4px 10px;
             }
             
+            .dpad-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+            }
+            
+            .action-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
             .game-container {
                 gap: 8px;
             }
         }
 
-        /* Para orientação landscape em telas pequenas */
-        @media (max-height: 480px) and (orientation: landscape) {
-            h1 {
-                font-size: 0.7rem;
-            }
-            
-            #luck-bar-container {
-                padding: 3px 8px;
-            }
-            
-            .game-container {
-                gap: 5px;
+        /* Desktop (acima de 750px) - oculta controles */
+        @media (min-width: 751px) {
+            .mobile-controls {
+                display: none !important;
             }
         }
 
-        /* Animação suave */
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&display=swap');
+
         .game-container {
             animation: fadeIn 0.5s ease-in;
         }
@@ -234,42 +365,69 @@
         </div>
 
         <div class="luck-section">
-            <div id="hud">
-                <div id="luck-bar-container">
-                    <span>🍀 Sorte</span>
-                    <div id="luck-bar-bg">
-                        <div id="luck-bar-fill"></div>
-                    </div>
-                    <span id="luck-value">50/100</span>
+            <div id="luck-bar-container">
+                <span>🍀 Sorte</span>
+                <div id="luck-bar-bg">
+                    <div id="luck-bar-fill"></div>
+                </div>
+                <span id="luck-value">50/100</span>
+            </div>
+        </div>
+
+        <!-- Controles para celular - visíveis APARTIR DE 750px -->
+        <div class="mobile-controls">
+            <!-- D-Pad -->
+            <div class="dpad">
+                <div class="dpad-row">
+                    <div class="dpad-btn" data-direction="up">▲</div>
+                </div>
+                <div class="dpad-row">
+                    <div class="dpad-btn" data-direction="left">◀</div>
+                    <div class="dpad-btn" data-direction="down">▼</div>
+                    <div class="dpad-btn" data-direction="right">▶</div>
+                </div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="action-buttons">
+                <div class="action-btn" data-action="E">
+                    <span>E</span>
+                    <span>ACTION</span>
+                </div>
+                <div class="action-btn" data-action="C">
+                    <span>C</span>
+                    <span>CANCEL</span>
+                </div>
+                <div class="action-btn" data-action="X">
+                    <span>X</span>
+                    <span>JUMP</span>
+                </div>
+                <div class="action-btn" data-action="Z">
+                    <span>Z</span>
+                    <span>ATTACK</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Script para prevenir scroll com setas do teclado
+        // Prevenir scroll com teclado
         window.addEventListener('keydown', function(e) {
-            // Previne scroll com as setas do teclado
             if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                 e.preventDefault();
             }
-            // Também previne scroll com espaço e page up/down
             if (e.key === ' ' || e.key === 'PageUp' || e.key === 'PageDown') {
                 e.preventDefault();
             }
         });
         
-        // Ajusta o canvas para caber na tela mantendo proporção
+        // Ajustar canvas
         function ajustarCanvas() {
             const canvas = document.getElementById('canva');
             if (!canvas) return;
             
             const wrapper = document.querySelector('.canvas-wrapper');
-            const container = document.querySelector('.game-container');
-            
-            if (wrapper && container) {
-                // O canvas se ajustará automaticamente via CSS
-                // mas garantimos que o wrapper não ultrapasse
+            if (wrapper) {
                 const maxHeight = wrapper.clientHeight;
                 const maxWidth = wrapper.clientWidth;
                 
@@ -289,28 +447,131 @@
             }
         }
         
-        // Observa mudanças de tamanho da tela
         window.addEventListener('resize', () => {
             setTimeout(ajustarCanvas, 100);
         });
         
-        // Executa após carregar
         window.addEventListener('load', () => {
             setTimeout(ajustarCanvas, 100);
         });
         
-        // Previne scroll com roda do mouse
+        // Prevenir scroll com roda
         document.querySelector('.game-container')?.addEventListener('wheel', function(e) {
             e.preventDefault();
         }, { passive: false });
         
-        // Garante que o canvas não capture eventos de teclado
-        const canvas = document.getElementById('canva');
-        if (canvas) {
-            canvas.addEventListener('keydown', function(e) {
-                e.preventDefault();
-            });
+        // ========== SISTEMA DE CONTROLES PARA CELULAR ==========
+        // Só ativa os controles se estiver em tela <= 750px
+        function shouldEnableMobileControls() {
+            return window.innerWidth <= 750;
         }
+        
+        function dispatchKeyEvent(key, type) {
+            const event = new KeyboardEvent(type, {
+                key: key,
+                code: key === 'ArrowUp' ? 'ArrowUp' : 
+                      key === 'ArrowDown' ? 'ArrowDown' :
+                      key === 'ArrowLeft' ? 'ArrowLeft' :
+                      key === 'ArrowRight' ? 'ArrowRight' : key,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+            
+            const canvas = document.getElementById('canva');
+            if (canvas) {
+                canvas.dispatchEvent(event);
+            }
+        }
+        
+        // Configurar botões do D-Pad
+        const dpadBtns = document.querySelectorAll('.dpad-btn');
+        dpadBtns.forEach(btn => {
+            const direction = btn.getAttribute('data-direction');
+            let key = '';
+            
+            switch(direction) {
+                case 'up': key = 'ArrowUp'; break;
+                case 'down': key = 'ArrowDown'; break;
+                case 'left': key = 'ArrowLeft'; break;
+                case 'right': key = 'ArrowRight'; break;
+            }
+            
+            function onStart(e) {
+                e.preventDefault();
+                if (shouldEnableMobileControls()) {
+                    dispatchKeyEvent(key, 'keydown');
+                    btn.style.transform = 'scale(0.95)';
+                }
+            }
+            
+            function onEnd(e) {
+                e.preventDefault();
+                if (shouldEnableMobileControls()) {
+                    dispatchKeyEvent(key, 'keyup');
+                    btn.style.transform = '';
+                }
+            }
+            
+            // Eventos de toque para mobile
+            btn.addEventListener('touchstart', onStart);
+            btn.addEventListener('touchend', onEnd);
+            btn.addEventListener('touchcancel', onEnd);
+            
+            // Eventos de mouse para desenvolvimento
+            btn.addEventListener('mousedown', onStart);
+            btn.addEventListener('mouseup', onEnd);
+            btn.addEventListener('mouseleave', onEnd);
+        });
+        
+        // Configurar botões de ação (E, C, X, Z)
+        const actionBtns = document.querySelectorAll('.action-btn');
+        actionBtns.forEach(btn => {
+            const action = btn.getAttribute('data-action');
+            let key = action;
+            
+            function onStart(e) {
+                e.preventDefault();
+                if (shouldEnableMobileControls()) {
+                    dispatchKeyEvent(key, 'keydown');
+                    btn.style.transform = 'scale(0.95)';
+                }
+            }
+            
+            function onEnd(e) {
+                e.preventDefault();
+                if (shouldEnableMobileControls()) {
+                    dispatchKeyEvent(key, 'keyup');
+                    btn.style.transform = '';
+                }
+            }
+            
+            // Eventos de toque
+            btn.addEventListener('touchstart', onStart);
+            btn.addEventListener('touchend', onEnd);
+            btn.addEventListener('touchcancel', onEnd);
+            
+            // Eventos de mouse
+            btn.addEventListener('mousedown', onStart);
+            btn.addEventListener('mouseup', onEnd);
+            btn.addEventListener('mouseleave', onEnd);
+        });
+        
+        // Prevenir zoom duplo toque
+        document.querySelectorAll('.dpad-btn, .action-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 1) e.preventDefault();
+            }, { passive: false });
+        });
+        
+        // Log para debug
+        console.log('Controles mobile ativados para telas até 750px!');
+        console.log(`Largura atual: ${window.innerWidth}px - ${shouldEnableMobileControls() ? 'Controles ATIVOS' : 'Controles INATIVOS'}`);
+        
+        // Monitorar mudanças de tamanho da tela
+        window.addEventListener('resize', () => {
+            console.log(`Tamanho alterado: ${window.innerWidth}px - ${shouldEnableMobileControls() ? 'Controles ATIVOS' : 'Controles INATIVOS'}`);
+        });
     </script>
     
     <script type="module" src="main.js"></script>
