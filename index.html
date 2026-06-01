@@ -2,49 +2,317 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Oracle's Curse</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #1a1a2e;
+            font-family: 'Courier New', monospace;
+            overflow: hidden; /* Remove scroll da página */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Container principal - ocupa toda tela mas sem scroll */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(5px, 2vh, 20px);
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            padding: clamp(5px, 2vh, 15px);
+            overflow: hidden;
+        }
+
+        /* Título responsivo */
+        h1 {
+            font-family: 'Cinzel', 'MedievalSharp', serif;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: clamp(0.9rem, 4vh, 2rem);
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin: 0;
+            flex-shrink: 0; /* Não encolhe */
+        }
+
+        /* Wrapper do canvas - flexível */
+        .canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 1; /* Ocupa espaço disponível */
+            min-height: 0; /* Permite encolher */
+            padding: 0 10px;
+        }
+
         canvas {
             image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            display: block;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Mantém proporção */
+        }
+
+        /* Seção da barra de sorte - fixa embaixo */
+        .luck-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0; /* Não encolhe */
+            margin-top: auto;
         }
 
         #hud {
-        position: absolute;
-        top: 10px; left: 10px;
-        color: white;
-        font-family: monospace;
+            position: static;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        #luck-bar-container {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            padding: clamp(6px, 1.5vh, 12px) clamp(10px, 2vw, 20px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(8px, 2vw, 15px);
+            flex-wrap: wrap;
+            border: 1px solid #ffd700;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        #luck-bar-container span:first-child {
+            font-size: clamp(11px, 2.5vh, 18px);
+            color: #ffd700;
+            font-family: 'Courier New', monospace;
         }
 
         #luck-bar-bg {
-        width: 150px; height: 14px;
-        background: #333; border: 1px solid #888;
+            width: min(200px, 30vw);
+            min-width: 100px;
+            height: clamp(10px, 2vh, 14px);
+            background: #333;
+            border: 1px solid #888;
+            border-radius: 7px;
+            overflow: hidden;
         }
         
         #luck-bar-fill {
-        height: 100%;
-        background: #4caf50;
-        transition: width 0.3s;
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.3s ease;
+            border-radius: 7px;
+        }
+
+        #luck-value {
+            font-size: clamp(10px, 2.2vh, 16px);
+            color: white;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Import das fontes */
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&display=swap');
+
+        /* Media query para telas muito pequenas (até 240px) */
+        @media (max-width: 240px) {
+            .game-container {
+                gap: 5px;
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+            }
+
+            #luck-bar-container {
+                padding: 4px 8px;
+                gap: 5px;
+            }
+
+            #luck-bar-bg {
+                min-width: 70px;
+                height: 8px;
+            }
+
+            #luck-bar-container span:first-child {
+                font-size: 8px;
+            }
+
+            #luck-value {
+                font-size: 8px;
+                min-width: 40px;
+            }
+            
+            .canvas-wrapper {
+                padding: 0 5px;
+            }
+        }
+
+        /* Para telas muito baixas (ex: 600px de altura) */
+        @media (max-height: 600px) {
+            h1 {
+                font-size: 0.8rem;
+            }
+            
+            #luck-bar-container {
+                padding: 4px 10px;
+            }
+            
+            .game-container {
+                gap: 8px;
+            }
+        }
+
+        /* Para orientação landscape em telas pequenas */
+        @media (max-height: 480px) and (orientation: landscape) {
+            h1 {
+                font-size: 0.7rem;
+            }
+            
+            #luck-bar-container {
+                padding: 3px 8px;
+            }
+            
+            .game-container {
+                gap: 5px;
+            }
+        }
+
+        /* Animação suave */
+        .game-container {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
-    <h1>A Maldição do Oráculo</h1>
+    <div class="game-container">
+        <h1>⚜️ A Maldição do Oráculo ⚜️</h1>
+        
+        <div class="canvas-wrapper">
+            <canvas id="canva" tabindex="-1"></canvas>
+        </div>
 
-    <div>
-        <canvas id="canva"></canvas>
-    </div>
-
-    <div id="hud">
-        <div id="luck-bar-container">
-            <span>🍀 Sorte</span>
-            <div id="luck-bar-bg">
-                <div id="luck-bar-fill"></div>
+        <div class="luck-section">
+            <div id="hud">
+                <div id="luck-bar-container">
+                    <span>🍀 Sorte</span>
+                    <div id="luck-bar-bg">
+                        <div id="luck-bar-fill"></div>
+                    </div>
+                    <span id="luck-value">50/100</span>
+                </div>
             </div>
-            <span id="luck-value">50/100</span>
         </div>
     </div>
 
+    <script>
+        // Script para prevenir scroll com setas do teclado
+        window.addEventListener('keydown', function(e) {
+            // Previne scroll com as setas do teclado
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+            }
+            // Também previne scroll com espaço e page up/down
+            if (e.key === ' ' || e.key === 'PageUp' || e.key === 'PageDown') {
+                e.preventDefault();
+            }
+        });
+        
+        // Ajusta o canvas para caber na tela mantendo proporção
+        function ajustarCanvas() {
+            const canvas = document.getElementById('canva');
+            if (!canvas) return;
+            
+            const wrapper = document.querySelector('.canvas-wrapper');
+            const container = document.querySelector('.game-container');
+            
+            if (wrapper && container) {
+                // O canvas se ajustará automaticamente via CSS
+                // mas garantimos que o wrapper não ultrapasse
+                const maxHeight = wrapper.clientHeight;
+                const maxWidth = wrapper.clientWidth;
+                
+                if (canvas.width && canvas.height) {
+                    const ratio = canvas.width / canvas.height;
+                    let newWidth = maxWidth;
+                    let newHeight = newWidth / ratio;
+                    
+                    if (newHeight > maxHeight) {
+                        newHeight = maxHeight;
+                        newWidth = newHeight * ratio;
+                    }
+                    
+                    canvas.style.maxWidth = `${newWidth}px`;
+                    canvas.style.maxHeight = `${newHeight}px`;
+                }
+            }
+        }
+        
+        // Observa mudanças de tamanho da tela
+        window.addEventListener('resize', () => {
+            setTimeout(ajustarCanvas, 100);
+        });
+        
+        // Executa após carregar
+        window.addEventListener('load', () => {
+            setTimeout(ajustarCanvas, 100);
+        });
+        
+        // Previne scroll com roda do mouse
+        document.querySelector('.game-container')?.addEventListener('wheel', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // Garante que o canvas não capture eventos de teclado
+        const canvas = document.getElementById('canva');
+        if (canvas) {
+            canvas.addEventListener('keydown', function(e) {
+                e.preventDefault();
+            });
+        }
+    </script>
+    
     <script type="module" src="main.js"></script>
 </body>
 </html>
