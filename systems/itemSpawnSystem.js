@@ -6,6 +6,8 @@ const RENDERABLE = [
     "rusty sword"
 ]
 
+let contador = 0
+
 world.registerSystem("itemSpawnSystem", (deltaTime) => {
     //verifica se já existe mapa
     const locations = world.query("player", "location")
@@ -13,7 +15,8 @@ world.registerSystem("itemSpawnSystem", (deltaTime) => {
 
     //decide se vai ter
     const items = world.query("item", "position")
-    if(items.length === 0){
+    if(items.length === 0 && contador < 1){
+        contador++
         const newItemId = world.createEntity()
         world.addComponent(newItemId, "item", {
             itemName: "rusty sword",
