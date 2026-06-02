@@ -2,6 +2,18 @@
 
 import { world } from "../game.js"
 
+
+// ── Sala inicial ──────────────────────────────────────────────
+const initialRoom = world.createEntity()
+world.addComponent(initialRoom, "room", {
+    id: 0,
+    north: null,
+    south: 1,   // porta ao sul para a próxima sala
+    east:  null,
+    west:  null,
+})
+
+
 //criar entidade main menu
 const menuEntity = world.createEntity()
 
@@ -14,6 +26,9 @@ world.addComponent(menuEntity, "menuItem", {
     label: "Iniciar",
     selected: false,
 })
+
+
+
 
 world.registerSystem("initSystem", (deltaTime) => {
 
@@ -49,8 +64,6 @@ world.registerSystem("initSystem", (deltaTime) => {
             canvas.height / 3 + 44
         )
     }
-        
-    
 
     for (const entityId of menuItems) {
         const item     = world.getComponent(entityId, "menuItem")
@@ -91,8 +104,13 @@ world.registerSystem("initSystem", (deltaTime) => {
             const player = world.createEntity()
  
             world.addComponent(player, "player", { //TODO: componentes diferntes
-                name: "player 1",
-                luck: "50",
+                name:         "Player 1",
+                luck:          50,
+                speed:         150,
+                hp:            100,
+                knockbackVx:   0,
+                knockbackVy:   0,
+                knockbackTimer: 0,
             })
  
             world.addComponent(player, "position", {
@@ -104,6 +122,13 @@ world.registerSystem("initSystem", (deltaTime) => {
                 color:  "#4a90e2",
                 width:  32,
                 height: 32,
+            })            
+            
+            world.addComponent(player, "collider", {
+                width:   28,
+                height:  28,
+                offsetX: 2,   // centraliza hitbox levemente dentro do sprite 32x32
+                offsetY: 2,
             })
  
             world.addComponent(player, "location", {

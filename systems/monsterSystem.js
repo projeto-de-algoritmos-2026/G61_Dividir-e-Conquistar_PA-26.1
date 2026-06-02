@@ -124,7 +124,15 @@ world.registerSystem("monsterSystem", (deltaTime) => {
 
     //escolhe o tipo e a quantidade de monstros
 
-    //criar entidades monstro
+    // Consulta qual é a sala atual no mapa
+    const maps = world.query("map");
+    if (maps.length === 0) return;
+    const mapData = world.getComponent(maps[0], "map");
+    
+    // Se ainda estiver na transição e não houver sala válida, não spawna o monstro
+    if (mapData.currentRoom === -1) return;
+
+    // criar entidades monstro
     const monsterId = world.createEntity()
 
     world.addComponent(monsterId, "monster", {
@@ -136,10 +144,9 @@ world.registerSystem("monsterSystem", (deltaTime) => {
         traveled: 0
     })
 
-
     world.addComponent(monsterId, "position", {
-        x: 32,
-        y: 32,
+        x: 200,
+        y: 200,
     })
     
     world.addComponent(monsterId, "sprite", {
@@ -153,10 +160,17 @@ world.registerSystem("monsterSystem", (deltaTime) => {
         y: 0
     })
 
-    world.addComponent(monsterId, "location", {
-        type: "nullString",
-        roomId: -1
+    world.addComponent(monsterId, "collider", {
+        width: 28,
+        height: 28,
+        offsetX: 2,
+        offsetY: 2,
     })
 
-    console.log("Um monstro foi criado!")
+    world.addComponent(monsterId, "location", {
+        type: "nullString",
+        roomId: mapData.currentRoom // <-- AGORA O MONSTRO PERTENCE À SALA ATUAL!
+    })
+
+    console.log("Um monstro foi criado na sala: ", mapData.currentRoom)
 })

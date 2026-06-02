@@ -14,6 +14,7 @@ world.registerSystem("movimentSystem", (deltaTime) => {
         const player   = world.getComponent(entityId, "player")
         const position = world.getComponent(entityId, "position")
         if (!player || !position) continue
+        if (player.knockbackTimer > 0) continue
 
         let dx = 0
         let dy = 0
