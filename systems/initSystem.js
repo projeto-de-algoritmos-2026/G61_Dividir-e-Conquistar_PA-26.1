@@ -90,9 +90,9 @@ world.registerSystem("initSystem", (deltaTime) => {
             // ── Cria o player ──────────────────────────────────────────────
             const player = world.createEntity()
  
-            world.addComponent(player, "player", { //TODO: componentes diferntes
+            world.addComponent(player, "player", {
                 name: "player 1",
-                luck: "50",
+                luck: 40,
             })
  
             world.addComponent(player, "position", {

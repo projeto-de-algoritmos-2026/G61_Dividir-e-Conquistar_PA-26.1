@@ -1,6 +1,7 @@
 // monsterSystem.js
 
 import { world } from "../game.js"
+import { kthselection } from "../utils/kthselection.js";
 
 const MONSTER_TYPES = [
     { type: "slime",    difficulty: 1 },
@@ -8,10 +9,54 @@ const MONSTER_TYPES = [
     { type: "demon",    difficulty: 3 },
 ];
 
+const lastRoom = []
+
+function generateMonsterType(luckLevel, luckMax) {
+    const luckRatio =
+        luckMax > 0
+            ? luckLevel / luckMax
+            : 0;
+
+    const k = Math.floor(
+        (1 - luckRatio) * MONSTER_TYPES.length
+    );
+
+    const clampedK = Math.min(
+        k,
+        MONSTER_TYPES.length - 1
+    );
+
+    const difficulties = MONSTER_TYPES.map(
+        monster => monster.difficulty
+    );
+
+    const selectedDifficulty = kthselection(
+        difficulties,
+        clampedK
+    );
+
+    const monsterType = MONSTER_TYPES.find(
+        monster =>
+            monster.difficulty === selectedDifficulty
+    );
+
+    return monsterType.type;
+}
+
 world.registerSystem("monsterSystem", (deltaTime) => {
     // verifica se já existe um player
     const players = world.query("player");
     if (players.length === 0) return;
+
+    const playerData = world.getComponent(players[0], "player");
+
+    // precisa existir mapa
+    const maps = world.query("map");
+    if (maps.length === 0) return;
+
+    const mapEntity = maps[0];
+    const mapData = world.getComponent(mapEntity, "map");
+    if (!mapData) return;
 
     //fazer o tipo da entidade andar
     const monsters = world.query("monster")
@@ -81,6 +126,13 @@ world.registerSystem("monsterSystem", (deltaTime) => {
                 }
             }
         } else {
+            let accelerate = 0.025
+            if(monsterType.type == "goblin"){
+                accelerate = 0.020
+            } else if (monsterType.type == "demon"){
+                accelerate = 0.030
+            }
+
             const dx = playerPosition.x - monsterPosition.x;
             const dy = playerPosition.y - monsterPosition.y;
 
@@ -90,7 +142,7 @@ world.registerSystem("monsterSystem", (deltaTime) => {
                 const dirX = dx / dist;
                 const dirY = dy / dist;
 
-                const acceleration = 0.1;
+                const acceleration = accelerate;
                 const maxSpeed = 2;
 
                 // acelera em direção ao jogador
@@ -118,45 +170,62 @@ world.registerSystem("monsterSystem", (deltaTime) => {
         }
     }
 
-    //verifica se precisa criar monstro
-    if(monsters.length > 0) return;
-    console.log("monsters", monsters.length)
+     //verifica se precisa criar monstro através de sala nova
+     
+    if(!lastRoom.includes(mapData.currentRoom)){
+        lastRoom.push(mapData.currentRoom)
+        if(Math.random() < 0.5) return
 
-    //escolhe o tipo e a quantidade de monstros
+        //criar entidades monstro //três tipos dependendo da sorte
+        //escolhe o tipo e a quantidade de monstros
+        const luckLevel = playerData?.luck ?? 0;
+        const luckMax = playerData?.luckMax ?? 100;
+        const choosenType = generateMonsterType(luckLevel, luckMax)
 
-    //criar entidades monstro
-    const monsterId = world.createEntity()
+        console.log("monstro escolhido", choosenType)
 
-    world.addComponent(monsterId, "monster", {
-        type: "slime",
-        state: "paused",
-        timer: 60,
-        dirX: 0,
-        dirY: 0,
-        traveled: 0
-    })
+        let monsterColor = "black";
 
+        if(choosenType == "slime"){
+            monsterColor = "green"
+        } else if (choosenType == "goblin") {
+            monsterColor = "#808000"
+        } else if (choosenType == "demon"){
+            monsterColor = "red"
+        }
 
-    world.addComponent(monsterId, "position", {
-        x: 32,
-        y: 32,
-    })
-    
-    world.addComponent(monsterId, "sprite", {
-        color: "green", 
-        width: 32, 
-        height: 32
-    })
+        const monsterId = world.createEntity()
 
-    world.addComponent(monsterId, "velocity", {
-        x: 0,
-        y: 0
-    })
+        world.addComponent(monsterId, "monster", {
+            type: choosenType,
+            state: "paused",
+            timer: 60,
+            dirX: 0,
+            dirY: 0,
+            traveled: 0
+        })
 
-    world.addComponent(monsterId, "location", {
-        type: "nullString",
-        roomId: -1
-    })
+        world.addComponent(monsterId, "position", {
+            x: Math.floor(Math.random() * (778 - 32 + 1)) + 32,
+            y: Math.floor(Math.random() * (612 - 32 + 1)) + 32
+        })
+        
+        world.addComponent(monsterId, "sprite", {
+            color: monsterColor, 
+            width: 32, 
+            height: 32
+        })
 
-    console.log("Um monstro foi criado!")
+        world.addComponent(monsterId, "velocity", {
+            x: 0,
+            y: 0
+        })
+
+        world.addComponent(monsterId, "location", {
+            type: "nullString",
+            roomId: mapData.currentRoom
+        })
+
+        console.log("Um monstro foi criado!")
+    }
 })
