@@ -97,21 +97,22 @@ world.registerSystem("collisionSystem", (deltaTime) => {
         resolveVsTiles(id, grid, tileSize)
     }
 
-    // ── 3. Player vs monstros (knockback + sinal de dano) ─────
+    // ── 3. Player vs monstros (knockback + sinal de dano + separação) ─────
     for (const playerId of players) {
         const playerData = world.getComponent(playerId, "player")
         const playerPos  = world.getComponent(playerId, "position")
         if (!playerData || !playerPos) continue
 
-        // Knockback ativo: move, decai, e mantém i-frames
+        // Trata o movimento inercial do knockback
         if (playerData.knockbackTimer > 0) {
             playerData.knockbackTimer -= deltaTime
             playerPos.x += playerData.knockbackVx * deltaTime
             playerPos.y += playerData.knockbackVy * deltaTime
             playerData.knockbackVx *= 0.92   // atrito do knockback
             playerData.knockbackVy *= 0.92
-            resolveVsTiles(playerId, grid, tileSize) // não atravessa parede durante knockback
-            continue  // i-frames: ignora novas colisões com monstros
+            resolveVsTiles(playerId, grid, tileSize) // não atravessa parede
+            
+            // O comando 'continue' foi REMOVIDO daqui para que a separação física continue funcionando!
         }
 
         const playerAABB = getAABB(playerId)
@@ -121,26 +122,32 @@ world.registerSystem("collisionSystem", (deltaTime) => {
             const monsterAABB = getAABB(monsterId)
             if (!monsterAABB || !overlaps(playerAABB, monsterAABB)) continue
 
-            // Direção: centro do monstro → centro do player
-            const dx = (playerAABB.x + playerAABB.w / 2) - (monsterAABB.x + monsterAABB.w / 2)
-            const dy = (playerAABB.y + playerAABB.h / 2) - (monsterAABB.y + monsterAABB.h / 2)
-            const dist = Math.hypot(dx, dy) || 1
-
-            playerData.knockbackVx    = (dx / dist) * 800
-            playerData.knockbackVy    = (dy / dist) * 800
-            playerData.knockbackTimer = 0.35   // 350ms de knockback + i-frames
-
-            // TODO: combatSystem lerá este resource para aplicar dano ao HP
-            // Padrão: collisionSystem detecta o hit → combatSystem processa o resultado
-            world.setResource("playerHit", { monsterId, timestamp: performance.now() })
-
-            // Pequeno recuo no monstro
-            const monsterPos = world.getComponent(monsterId, "position")
-            if (monsterPos) {
-                monsterPos.x -= (dx / dist) * 12
-                monsterPos.y -= (dy / dist) * 12
+            // 1. Separação Física Constante (Impede o monstro de sobrepor o player)
+            const mtv = getMTV(playerAABB, monsterAABB)
+            if (mtv) {
+                const monsterPos = world.getComponent(monsterId, "position")
+                if (monsterPos) {
+                    // Como o mtv empurra a Entidade A (Player), subtrair o mtv empurra a Entidade B (Monstro)
+                    monsterPos.x -= mtv.x
+                    monsterPos.y -= mtv.y
+                    
+                    // Atualiza a colisão da parede pro monstro não ser expulso do mapa pelo jogador
+                    resolveVsTiles(monsterId, grid, tileSize)
+                }
             }
-            break  // um knockback por vez
+
+            // 2. Aplica Dano e Knockback APENAS se não estiver atordoado
+            if (playerData.knockbackTimer <= 0) {
+                const dx = (playerAABB.x + playerAABB.w / 2) - (monsterAABB.x + monsterAABB.w / 2)
+                const dy = (playerAABB.y + playerAABB.h / 2) - (monsterAABB.y + monsterAABB.h / 2)
+                const dist = Math.hypot(dx, dy) || 1
+
+                playerData.knockbackVx    = (dx / dist) * 800
+                playerData.knockbackVy    = (dy / dist) * 800
+                playerData.knockbackTimer = 0.35   // 350ms de knockback + i-frames
+
+                world.setResource("playerHit", { monsterId, timestamp: performance.now() })
+            }
         }
     }
 
