@@ -1,17 +1,95 @@
 // itemSpawnSystem.js
 
 import { world } from "../game.js";
+import { kthselection } from "../utils/kthselection.js";
 
 const RENDERABLE = [
-    "rusty sword"
+    "rusty sword",
+    "weapon duel sword",
+    "weapon lavish sword"
 ]
 
-let contador = 0
+const ITEM_TYPES = [
+    {name: "rusty sword", ease: 1},
+    {name: "weapon duel sword", ease: 15},
+    {name: "weapon lavish sword", ease: 30}
+]
+
+function generateItemType(luckLevel, luckMax) {
+    const luckRatio =
+        luckMax > 0
+            ? luckLevel / luckMax
+            : 0;
+
+    const k = Math.floor(
+        luckRatio * ITEM_TYPES.length
+    );
+
+    const clampedK = Math.min(
+        k,
+        ITEM_TYPES.length - 1
+    );
+
+    const eases = ITEM_TYPES.map(
+        item => item.ease
+    );
+
+    const selectedEase =
+        kthselection(
+            eases,
+            clampedK
+        );
+
+    const item = ITEM_TYPES.find(
+        item =>
+            item.ease === selectedEase
+    );
+
+    return item.name;
+}
+
+function generateMonsterType(luckLevel, luckMax) {
+    const luckRatio =
+        luckMax > 0
+            ? luckLevel / luckMax
+            : 0;
+
+    const k = Math.floor(
+        (1 - luckRatio) * MONSTER_TYPES.length
+    );
+
+    const clampedK = Math.min(
+        k,
+        MONSTER_TYPES.length - 1
+    );
+
+    const difficulties = MONSTER_TYPES.map(
+        monster => monster.difficulty
+    );
+
+    const selectedDifficulty = kthselection(
+        difficulties,
+        clampedK
+    );
+
+    const monsterType = MONSTER_TYPES.find(
+        monster =>
+            monster.difficulty === selectedDifficulty
+    );
+
+    return monsterType.type;
+}
+
+let lastRoom = []
 
 world.registerSystem("itemSpawnSystem", (deltaTime) => {
     //verifica se já existe mapa
     const locations = world.query("player", "location")
     if (locations.length === 0) return;
+
+    const players = world.query("player");
+    if (players.length === 0) return;
+    const playerData = world.getComponent(players[0], "player");
 
     // precisa existir mapa
     const maps = world.query("map");
@@ -23,11 +101,20 @@ world.registerSystem("itemSpawnSystem", (deltaTime) => {
 
     //decide se vai ter
     const items = world.query("item", "position")
-    if(items.length === 0 && contador < 1 && mapData.currentRoom != -1){
-        contador++
-        const newItemId = world.createEntity()
+
+    if(!lastRoom.includes(mapData.currentRoom)){ //decidir com base em nova sala
+        lastRoom.push(mapData.currentRoom)
+        // if(Math.random() < 0.5) return
+
+        const luckLevel = playerData?.luck ?? 0;
+        const luckMax = playerData?.luckMax ?? 100;
+        const itemType = generateItemType(luckLevel, luckMax)
+        console.log(itemType)
+
+        const newItemId = world.createEntity() //três tipos diferentes dependente de sorte
+
         world.addComponent(newItemId, "item", {
-            itemName: "rusty sword",
+            itemName: itemType,
             stackable: false,
             equippable: true,
             consumable: false,
@@ -35,8 +122,8 @@ world.registerSystem("itemSpawnSystem", (deltaTime) => {
         })
 
         world.addComponent(newItemId, "position", {
-            x: 400,
-            y: 64
+            x: Math.floor(Math.random() * (778 - 32 + 1)) + 32,
+            y: Math.floor(Math.random() * (612 - 32 + 1)) + 32
         })
 
         world.addComponent(newItemId, "location", {

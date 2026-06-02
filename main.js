@@ -25,6 +25,20 @@ tilesetImg3.onload = () => {
     requestAnimationFrame(gameLoop); // só inicia depois de carregar
 };
 
+const tilesetImg4 = new Image();
+tilesetImg4.src = 'resources\\weapons\\weapon_duel_sword.png';
+tilesetImg4.onload = () => {
+    world.setResource('weapon duel sword', tilesetImg4);
+    requestAnimationFrame(gameLoop); // só inicia depois de carregar
+};
+
+const tilesetImg5 = new Image();
+tilesetImg5.src = 'resources\\weapons\\weapon_lavish_sword.png';
+tilesetImg5.onload = () => {
+    world.setResource('weapon lavish sword', tilesetImg5);
+    requestAnimationFrame(gameLoop); // só inicia depois de carregar
+};
+
 // === canvas ===
 const canvas = document.getElementById("canva")
 const ctx = canvas.getContext("2d")

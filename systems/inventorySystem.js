@@ -3,8 +3,11 @@
 import { world } from "../game.js"
 
 const RENDERABLE = [
-    "rusty sword"
+    "rusty sword",
+    "weapon duel sword",
+    "weapon lavish sword"
 ]
+
 
 function drawInventoryHUD(ctx, canvas, inventory, activeSlot = 0) {
     const SLOT_SIZE = 44;
@@ -169,6 +172,7 @@ world.registerSystem("inventorySystem", (deltaTime) => {
             if (freeSlot !== -1) {
                 inv.items[freeSlot] = { entityId: nearestItem, ...itemData };
                 world.removeComponent(nearestItem, "position"); // sai do chão
+                world.removeComponent(nearestItem, "location"); // sai do chão
             }
         }
     }
@@ -184,6 +188,7 @@ world.registerSystem("inventorySystem", (deltaTime) => {
 
             // devolve position à entidade original do item
             world.addComponent(slotData.entityId, "position", { x: dropX, y: dropY });
+            world.addComponent(slotData.entityId, "location", { type: "nullString", roomId: playerLocation.roomId}); // sai do chão
 
             inv.items[inv.activeSlot] = null;
             inv.activeSlot = -1;
