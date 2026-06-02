@@ -10,6 +10,10 @@
 | 231026311  | Eduardo Valadares    |
 | 231027195  | Caio Venâncio        |
 
+## Vídeo de apresentação
+
+[Apresenção de Oráculo da Maldição](https://youtu.be/HlAjuzPzlI8)
+
 ## Sobre
 
 **Oráculo da Maldição** é um dungeon crawler roguelike desenvolvido em JavaScript, inspirado em jogos como The Binding of Isaac, Hades e Dead Cells. O jogador explora calabouços cheios de inimigos, coleta itens de sorte e melhor combate para vencer os desafios.
@@ -31,17 +35,17 @@ O projeto utiliza **Entity Component System (ECS)** para gerenciar entidades (jo
 ### 1. Tela de Menu
 Menu inicial do jogo mostrando o título "A Maldição do Oráculo", uma descrição temática e o botão "Iniciar". Exibe também a barra de Sorte do jogador.
 
-![Menu](screenshots/menuPrint.png)
+![Menu](menuPrint.png)
 
 ### 2. Calabouço Escuro
 O jogador explorador um calabouço escuro enfrentando inimigos. É possível ver o jogador (personagem branco), inimigos, itens no chão (amarelo e azul) e o inventário na parte inferior.
 
-![Calabouço Escuro](screenshots/calaboucoPrint.png)
+![Calabouço Escuro](calaboucoPrint.png)
 
 ### 3. Sala Verde com Múltiplos Inimigos
 Uma sala diferente repleta de inimigos. O jogador está equipado com uma arma (espada amarela) e o inventário mostra os itens coletados durante a exploração.
 
-![Sala Verde](screenshots/verdePrint.png)
+![Sala Verde](verdePrint.png)
 
 ## Instalação
 
