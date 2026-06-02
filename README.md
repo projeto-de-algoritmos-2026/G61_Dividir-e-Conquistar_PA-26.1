@@ -1,7 +1,7 @@
 # Oráculo da Maldição
 
 **Número da Lista:** 61  
-**Conteúdo da Disciplina:** Greedy (Algoritmos Gulosos)
+**Conteúdo da Disciplina:** Dividir e Conquistar
 
 ## Alunos
 
