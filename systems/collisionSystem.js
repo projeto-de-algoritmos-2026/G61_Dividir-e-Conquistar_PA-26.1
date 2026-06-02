@@ -101,7 +101,9 @@ world.registerSystem("collisionSystem", (deltaTime) => {
     for (const playerId of players) {
         const playerData = world.getComponent(playerId, "player")
         const playerPos  = world.getComponent(playerId, "position")
-        if (!playerData || !playerPos) continue
+        const playerLocation = world.getComponent(playerId, "location")
+
+        if (!playerData || !playerPos || playerLocation) continue
 
         // Trata o movimento inercial do knockback
         if (playerData.knockbackTimer > 0) {
@@ -120,6 +122,10 @@ world.registerSystem("collisionSystem", (deltaTime) => {
 
         for (const monsterId of monsters) {
             const monsterAABB = getAABB(monsterId)
+            const monsterLocation = world.getComponent(monsterId, "location")
+
+            if(monsterLocation.roomId != playerLocation.roomId) continue
+
             if (!monsterAABB || !overlaps(playerAABB, monsterAABB)) continue
 
             // 1. Separação Física Constante (Impede o monstro de sobrepor o player)
