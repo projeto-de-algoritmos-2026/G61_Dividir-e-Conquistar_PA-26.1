@@ -221,6 +221,13 @@ world.registerSystem("monsterSystem", (deltaTime) => {
             y: 0
         })
 
+        world.addComponent(monsterId, "collider", {
+            width: 28,
+            height: 28,
+            offsetX: 2,
+            offsetY: 2,
+        })
+
         world.addComponent(monsterId, "location", {
             type: "nullString",
             roomId: mapData.currentRoom
